@@ -1,0 +1,31 @@
+[
+	{
+		"id": "preferences",
+		"children":
+		[
+			{
+				"caption": "Package Settings",
+				"id": "package-settings",
+				"children":
+				[
+					{
+						"caption": "OnSave",
+						"children":
+						[
+							{
+								"command": "open_file",
+								"args": {"file": "${packages}/OnSave/OnSave.sublime-settings"},
+								"caption": "Settings – Default"
+							},
+							{
+								"command": "open_file",
+								"args": {"file": "${packages}/User/OnSave.sublime-settings"},
+								"caption": "Settings – User"
+							},
+						]
+					}
+				]
+			}
+		]
+	}
+]
