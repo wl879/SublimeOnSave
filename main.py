@@ -13,8 +13,8 @@ except (ImportError, ValueError):
 
 DEF_NAME      = '.onsave'
 CONFIG_TMP    = path.dirname(__file__)+'/Config.TMP.yml'
-SETTING       = sublime.load_settings('OnSave.sublime-settings')
-BINS          = SETTING.get('bin') 
+SETTING       = None #sublime.load_settings('OnSave.sublime-settings')
+BINS          = None # SETTING.get('bin') 
 WORK_DIR      = {}
 NOTWORK_DIR   = {}
 CONFIG_CACHE  = {}
@@ -25,10 +25,14 @@ RUN_QUEUE     = []
 
 class NewOnSaveConfigCommand(sublime_plugin.WindowCommand):
     def run(self, dirs):
+        checkOnSaveInited()
         if path.isfile( path.join(dirs[0], DEF_NAME) ):
             view = self.window.open_file( path.join(dirs[0], DEF_NAME) )
         else:
-            view = viewTools.create(DEF_NAME, self.window, text = '\n'.join(SETTING.get('config_template')))
+            window = self.window or sublime.active_window()
+            content = SETTING.get('config_template') or []
+            print(SETTING)
+            view = viewTools.create(DEF_NAME, window, text = '\n'.join(content))
         if view:
             viewTools.setting(view, syntax="Packages/YAML/YAML.tmLanguage", dir = dirs[0])
 
@@ -39,35 +43,34 @@ class OnSaveCommand(sublime_plugin.EventListener):
     
     def on_post_save(self, view):
         global RUN_QUEUE
+        checkOnSaveInited()
+
         RUN_QUEUE = []
         file = view.file_name()
-
-        if file in CMD_CACHE:
-            print('[OnSave load cache] "'+file+'"')
-            for cmd_opt in CMD_CACHE[file]:
-                pushCMDQueue( cmd_opt )
-            return
-
         if path.basename(file) == DEF_NAME:
             refreshOnSaveConfig( path.dirname(file) )
             return
 
-        work_dir = checkOnSaveWorkDir(file)
+        print('[OnSave]')
+        if file in CMD_CACHE:
+            print('[OnSave load cmd cache] "'+file+'"')
+            for cmd_opt in CMD_CACHE[file]:
+                work_dir = cmd_opt['work_dir'];
+                pushCMDQueue( cmd_opt )
+        else:
+            if file not in NOTWORK_DIR:
+                work_dir = checkOnSaveWorkDir(file)
+                if work_dir:
+                    config = loadOnSaveConfig(work_dir)
+                    if config:
+                        print('[OnSave find cmd] "'+file+'"')
+                        parseOnSaveConfig(config, work_dir, file)
         if checkOnSavePattern( viewTools.content(view), file, work_dir):
             return
 
-        if file in NOTWORK_DIR:
-            return
-
-        if work_dir:
-            config = loadOnSaveConfig(work_dir)
-            if config:
-                print('[OnSave run file] "'+file+'"')
-                parseOnSaveConfig(config, work_dir, file)
-                return
-
         print('[OnSave exclude file] "'+file+'"')
-        NOTWORK_DIR[file] = True
+        if not work_dir:
+            NOTWORK_DIR[file] = True
 
 class ProcessListener(object):
 
@@ -152,26 +155,33 @@ def checkOnSaveWorkDir(to):
 
 def checkOnSavePattern(text, file, work_dir):
     m = re.findall(r'(?m)\#\s*(CMD|DEBUG|ENV)\s*:\s*(.*?)$', text)
-    listeners = []
-    block     = ''
-    for item in m:
-        if item[0] == 'CMD':
-            if block:
-                listeners.append( yaml.load(block) )
-            block = item[0]+' : '+item[1]
-        else:
-            block += "\n"+item[0]+' : '+item[1]
-    if block:
-        listeners.append( yaml.load(block) )
+    if m and len(m):
+        listeners = []
+        block     = ''
+        for item in m:
+            if item[0] == 'CMD':
+                if block:
+                    listeners.append( yaml.load(block) )
+                block = item[0]+' : '+item[1]
+            else:
+                block += "\n"+item[0]+' : '+item[1]
+        if block:
+            listeners.append( yaml.load(block) )
 
-    work_dir = work_dir or path.dirname(file)
-    for item in listeners:
-        cmd_opt = parseListener(item, file, work_dir)
-        if cmd_opt:
-            pushCMDQueue( cmd_opt )
+        if len(listeners):
+            print('[OnSave match cmd] "'+file+'"')
+            if work_dir:
+                config = CONFIG_CACHE.get(work_dir, {});
+                param  = config.get('VAR')
+            else:
+                 work_dir = path.dirname(file)
+            for item in listeners:
+                cmd_opt = parseListener(item, file, work_dir, param)
+                if cmd_opt:
+                    pushCMDQueue( cmd_opt )
 
 def loadOnSaveConfig(work_dir, reload = False):
-    if reload == False and work_dir in CONFIG_CACHE and CONFIG_CACHE[work_dir]:
+    if reload == False and CONFIG_CACHE.get(work_dir):
         return CONFIG_CACHE[work_dir]
     conf_file = work_dir+'/'+DEF_NAME
     conf_text = viewTools.readFile(conf_file)
@@ -261,7 +271,7 @@ def runCMD(debug_id, cmd_opt, need_queue = False):
     cmd      = cmd_opt.get('cmd')
     work_dir = cmd_opt.get('work_dir')
     env      = cmd_opt.get('env')
-    print('[OnSave CMD] '+cmd)
+    print('[OnSave run cmd] '+cmd)
 
     if work_dir:
         os.chdir(work_dir)
@@ -301,9 +311,9 @@ def killProcessor(debug_id):
 
 def ehcoText(view, text):
     text = re.sub(r'(?m)^(?!>>>|\[(\W){4}\]|$)', '    ', text)
-    if re.search(r'\[(\W){4}\]', text):
+    if re.search(r'\[([^\w\s])\1{3}\]', text):
         num = int((view.viewport_extent()[0]/view.em_width())-2)
-        text = re.sub(r'\[(\W){4}\]', lambda m:(m.group(1) * num), text)
+        text = re.sub(r'\[([^\w\s])\1{3}\]', lambda m:(m.group(1) * num), text)
     viewTools.append(view, text, True)
 
 def checkView(name):
@@ -344,3 +354,10 @@ def debugID(debug):
     else:
         return '#OnSave Console ['+str(sublime.active_window().id())+']'
 
+def checkOnSaveInited():
+    global SETTING, BINS
+    if SETTING:
+        return
+    CONFIG_TMP    = path.dirname(__file__)+'/Config.TMP.yml'
+    SETTING       = sublime.load_settings('OnSave.sublime-settings')
+    BINS          = SETTING.get('bin') 

@@ -5,7 +5,7 @@
 	"console":{
 		"only_read"       : true,
 		"font_size"       : 10,
-		"file_point"      : "(?i)(\\/?(?:[\\w\\-\\.]*?\\/)+[\\w\\-\\.]+?\\.\\w+) *(?:\" *|:|, *line|at *line){0,2} *(\\d*)",
+		"file_point"      : "(\\/?(?:[\\w\\-\\.]*?\\/)+[\\w\\-\\.]+?\\.\\w+) *(?:\" *|:|, *line|at *line){0,2} *(\\d*)",
 		"line_numbers"    : false,
 		"scroll_past_end" : false,
 		"word_wrap"       : true,
