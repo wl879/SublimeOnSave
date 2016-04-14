@@ -52,6 +52,7 @@ class OnSaveCommand(sublime_plugin.EventListener):
             return
 
         print('[OnSave]')
+        work_dir = None
         if file in CMD_CACHE:
             print('[OnSave load cmd cache] "'+file+'"')
             for cmd_opt in CMD_CACHE[file]:
@@ -65,6 +66,7 @@ class OnSaveCommand(sublime_plugin.EventListener):
                     if config:
                         print('[OnSave find cmd] "'+file+'"')
                         parseOnSaveConfig(config, work_dir, file)
+
         if checkOnSavePattern( viewTools.content(view), file, work_dir):
             return
 
