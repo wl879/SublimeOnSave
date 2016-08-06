@@ -1,18 +1,16 @@
 # OnSave plugin for Sublime Text 3
 
+Which executes given commands on file save. output results can be displayed in an edit view
 
 
-可以在你保存文件时，预设一些执行指令，如 Coffeescript、Teajs、Css、Jade 的预编译。
+
+在你保存文件时，预设一些执行指令，如 Coffeescript、Teajs、Css、Jade 的预编译。
 
 特点:
     OnSave plugin 可将输出内容显示到 Sublime Text 的编辑窗口中，更优雅的调试你的代码。
 
-技巧:
-    在输出的内容中可以双击文件目录格式的文本（例：~/Sites/index.html），将会跳转到目标文件
 
-
-
-## 安装
+## 安装 Install
 
 目前只测式过在 Mac OS 下的 Sublime Text 3 版本
 
@@ -31,24 +29,23 @@
     
             ~/Library/Application Support/Sublime Text 3/Packages/
     
-    * Linux:
-    
-            ~/.config/sublime-text-3/Packages/
-    
-    * Windows:
-    
-            %APPDATA%/Sublime Text 3/Packages/
-
 ```
 
-## 使用
+
+
+## 使用 Usage
+
+
+
+Create a ".onsave" file in you project dir.  The contents as follows
+
 
 
 ### 配置文件
 
 
 * 新建在你的项目目录下 ".onsave" 文件，使用 yaml 语法配置
-* 也可以在项目文件夹上 [右键] > [New OnSave config] 创建，模板如下：
+* 也可以在项目文件夹上 [右键] > [On Save] 创建，模板如下：
 
 
 ```yaml
@@ -64,11 +61,12 @@ ENV:
     #path: /usr/bin
 
 # 开启输出显示的功能
-DEBUG : refresh
-        # false 不显示
-        # true 显示在快捷的窗口中
-        # 定义一个输出窗口的 ID，输出到一个标准文本编辑窗口中
-            # ID + refresh 重新执行时清除上次输出的内容
+OUT : right
+# false 不显示
+# 定义一个输出窗口的 name，输出到一个标准文本编辑窗口中
+# name left 在左边打开一个输出窗口
+# name right 在右边打开一个输出窗口
+# name bottom 在下边打开一个输出窗口
             
 # 设置执行的命令, 可设置多个
 LISTENER:
@@ -84,16 +82,20 @@ LISTENER:
                 # $name     = 引用在 VAR 中预设的变量
                 
         # 开启输出显示的功能
-        DEBUG : refresh
+        OUT : right
         
         # 需要检测的文件, 除普通的通配符外, 使用正则表达式用 [( ... )] 标注
         WATCH : "*.js"
-        
+   
         # 设置超时 5s
         TIMEOUT : 5000
 ```
 
-## 截图
+
+
+## 截图 Screenshots
 
 
 ![OnSave plugin](https://raw.githubusercontent.com/wl879/screenshots/master/pics/onsaveplugin.png)
+
+![OnSave plugin](https://raw.githubusercontent.com/wl879/screenshots/master/pics/onsaveplugin.gif)
