@@ -58,15 +58,7 @@
       </dict>
       <dict>
         <key>comment</key>
-        <string>Commend</string>
-        <key>match</key>
-        <string>#.*$</string>
-        <key>name</key>
-        <string>comment</string>
-      </dict>
-      <dict>
-        <key>comment</key>
-        <string>EOT</string>
+        <string>esc</string>
         <key>match</key>
         <string>\\.</string>
         <key>name</key>
@@ -82,57 +74,17 @@
       </dict>
       <dict>
         <key>comment</key>
-        <string>Keyword</string>
-        <key>match</key>
-        <string>\b(Error|Bug|Debug|Unexpected|Undefined|Warn)\b</string>
-        <key>name</key>
-        <string>keyword</string>
-      </dict>
-      <dict>
-        <key>comment</key>
         <string>File</string>
         <key>match</key>
-        <string>([\.\w\~\-]*)(\/[\.\w\~\-]+)+(\.[\w\-]+)(?#\s|:\d+|$)</string>
+        <string>(\/?(?:[\w\-\.]*?\/)+[\w\-\.]+\.\w+) *(?:\&quot; *|:|, *line|at *line){0,2} *(\d*)</string>
         <key>name</key>
         <string>string</string>
       </dict>
       <dict>
         <key>comment</key>
-        <string>Upcase</string>
-        <key>match</key>
-        <string>\b[A-Z_]+\b</string>
-        <key>name</key>
-        <string>storage.type</string>
-      </dict>
-      <dict>
-        <key>comment</key>
-        <string>Tag</string>
-        <key>match</key>
-        <string>\[[\w -]+\]</string>
-        <key>name</key>
-        <string>storage.type</string>
-      </dict>
-      <dict>
-        <key>comment</key>
-        <string>Tag2</string>
-        <key>match</key>
-        <string>\([\w -]+\)</string>
-        <key>name</key>
-        <string>variable.parameter</string>
-      </dict>
-      <dict>
-        <key>comment</key>
-        <string>Tag3</string>
-        <key>match</key>
-        <string>\{[\w -]+\}</string>
-        <key>name</key>
-        <string>keyword</string>
-      </dict>
-      <dict>
-        <key>comment</key>
         <string>Number</string>
         <key>match</key>
-        <string>\b\d+\b</string>
+        <string>(?&lt;![a-zA-Z])(0[xX][0-9a-fA-F]+|(?:\.\d+|\d+(?:\.\d+)?)(?:e\-?\d+)?)</string>
         <key>name</key>
         <string>constant.numeric</string>
       </dict>

@@ -3,7 +3,7 @@
 		"caption": "-", "id": "side-bar-end-separator"
 	},
     {
-    	"caption": "New OnSave config", "command": "new_on_save_config", "args": {"dirs": []}
+    	"caption": "On Save", "command": "new_on_save_config", "args": {"dirs": []}
     },
     {
 		"caption": "-", "id": "side-bar-end-separator"
