@@ -1,0 +1,10 @@
+[
+
+	{
+		"keys"     : ["super+b"],
+		"command"  : "on_save_build",
+		"context"  : [
+			{"key" : "setting.usebuild", "operator": "equal", "operand": true}
+		]
+	}
+]

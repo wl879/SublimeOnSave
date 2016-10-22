@@ -84,7 +84,7 @@ def checkView( id ):
     global console_language
     view = st_tools.view.find( id )
     if not view:
-        settings = sublime.load_settings('OnSave.sublime-settings')
+        settings = sublime.load_settings('Default.sublime-settings')
         win      = sublime.active_window()
         mode = 'right'
         if id.find('bottom') != -1:

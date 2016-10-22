@@ -14,12 +14,12 @@
 						[
 							{
 								"command": "open_file",
-								"args": {"file": "${packages}/OnSave/OnSave.sublime-settings"},
+								"args": {"file": "${packages}/OnSave/Default.sublime-settings"},
 								"caption": "Settings – Default"
 							},
 							{
 								"command": "open_file",
-								"args": {"file": "${packages}/User/OnSave.sublime-settings"},
+								"args": {"file": "${packages}/User/Default.sublime-settings"},
 								"caption": "Settings – User"
 							},
 						]

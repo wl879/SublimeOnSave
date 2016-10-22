@@ -19,12 +19,16 @@
 		"    #path: /usr/bin",
 		"LISTENER:",
 		"    -   CMD     : echo \"This is shell cmd!!\"",
-		"                  # \\$ROOT     = 配置文件所在的目录",
-		"                  # \\$FILE     = 当前文件路径",
-		"                  # \\$FILENAME = 当前文件名",
-		"                  # \\$FILEDIR  = 当前文件所在的文件夹",
+		"        # \\$ROOT     = 配置文件所在的目录",
+		"        # \\$FILE     = 当前文件路径",
+		"        # \\$FILENAME = 当前文件名",
+		"        # \\$FILEDIR  = 当前文件所在的文件夹",
 		"        OUT     : right # name + [left right bottom]",
 		"        WATCH   : \"*.js\"",
-		"        TIMEOUT : 5000"
+		"        TIMEOUT : 5000",
+		"        PASER   : \"javascript\"",
+		"        # 设置输出的解析器",
+		"        USEBUILD: fase",
+		"        # 为 true 时，停止保存时执行，改为使用 comand + b 快捷键"
 	]
 }

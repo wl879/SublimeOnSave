@@ -14,9 +14,10 @@ Which executes given commands on file save. output results can be displayed in a
 
 Execute **"Package Control: Install Package"** in the Command Pallette to retrieve a list of available packages. Search in the list and install package `On Save`.
 
-
-
-现在已经成功上传到 Sublime Text Package Control, 可以在 Install package 里搜索 `On Save`
+```
+现在已经成功上传到 Sublime Text Package Control, 
+在 Install package 里搜索 "On Save"
+```
 
 
 ### Git installation
