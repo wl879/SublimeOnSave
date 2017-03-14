@@ -1,67 +1,108 @@
-import os
-from .cmd_console import Console
+import os, time, sublime
+from .console import Console
+from Default import exec
+
 
 class CmdQueue():
     
     def __init__(self):
         self.queue    = {}
-        self.consoles = {}
+        # self.consoles = {}
 
     def add(self, cmd):
-        id = cmd.get('out');
-        if not self.queue.get(id):
-            self.queue[id] = []
-        self.queue[ id ].append( cmd )
-        self.check( id )
+        console_id = cmd.console
+        if self.queue.get(console_id) == None:
+            self.queue[console_id] = CmdProcess(console_id)
+        self.queue[ console_id ].add( cmd )
+        self.queue[ console_id ].check()
 
-    def run(self, cmd):
-        env     = cmd.get('env')
-        out     = cmd.get('out')
-        dir     = cmd.get('dir')
-        timeout = cmd.get('timeout')
-        os.chdir( dir )
-
-        if out:
-            console = self.consoles.get( out )
-        if console:
-            console.kill( 'stop' )
+    def clear(self, console_id = None):
+        if console_id:
+            process = self.queue.get( console_id )
+            if process:
+                process.clear()
+            self.queue[console_id] = None
         else:
-            console = Console( out, self )
-        if out:
-            self.consoles[ out ] = console
-        console.run( cmd.get('cmd'), timeout, env)
-        return console
+            for console_id in self.queue:
+                self.clear( console_id )
+            self.queue = {}
 
-    def check(self, id):
-        queue = self.queue.get( id )
-        if queue and queue[0]:
-            if type(queue[0]) != Console:
-                cmd = queue[0]
-                queue[0] = self.run(cmd)
-                return cmd
+class CmdProcess():
+
+    def __init__(self, id):
+        self.id = id
+        self.queue   = []
+        self.console = Console( self.id )
+        self.process = None
+        self.timestamp = 0
+        self.timeoutId = 0
+
+    def add(self, cmd):
+        self.queue.append(cmd)
+
+    def check(self):
+        if self.process == None:
+            self.run()
+            return True
         return False;
 
-    def next(self, id):
-        queue = self.queue.get(id)
-        if queue and queue[0]:
-            if type(queue[0]) == Console:
-                queue[0].kill()
-                queue.pop(0)
-            return self.check( id )
-        return False
+    def run(self):
+        if self.process != None:
+            self.kill( "stop" )
+        if len(self.queue) <= 0:
+            return
+        cmd = self.queue.pop(0)
+        self.console.log('>>> # ' + cmd.cmd + '\n')
+        self.process   = exec.AsyncProcess(None, cmd.cmd, cmd.env or {}, self)
+        self.timestamp = self.process.start_time
+        if cmd.timeout:
+            timestamp = self.timestamp
+            sublime.set_timeout(lambda:self.kill('timeout', timestamp), float(cmd.timeout))
 
-    def clear(self, id):
-        if id:
-            console = self.consoles.get(id)
-            if console:
-                console.clear();
-            queue = self.queue.get( id )
-            if queue:
-                for item in queue:
-                    if type(item) == Console:
-                        item.kill( 'clear' )
-            self.queue[id] = None
+    def kill(self, state = 'over', timestamp = None):
+        if state == 'timeout' and timestamp != self.timestamp:
+            return
+        if self.process:
+            exit_code = self.process.exit_code()
+            if exit_code:
+                self.console.log( "\n<<< ! Unexpected exit %d use %.2fs" % (exit_code, time.time() - self.timestamp) )
+            elif exit_code != 0:
+                self.console.log( "\n<<< ! Exit by %s use %.2fs" % (state, time.time() - self.timestamp) )
+            self.process.kill()
+        self.process = None
+
+    # AsyncProcess 协议部分
+    def on_data(self, process, data):
+        text = data.decode( 'UTF-8' )
+        self.console.echo( text )
+
+    def on_finished(self, process):
+        exit_code = process.exit_code()
+        if exit_code == 0:
+            self.console.log( "\n<<< # Finished use %.2fs\n" % (time.time() - self.timestamp) )
         else:
-            for id in self.queue:
-                self.clear( id )
-            self.queue = {}
+            self.console.log( "\n<<< ! Unexpected exit %d use %.2fs" % (exit_code, time.time() - self.timestamp) )
+        self.process = None
+        if len(self.queue) > 0:
+            self.run()
+
+    def clear(self):
+        self.queue = []
+        self.kill( "clear" )
+        self.console.clear()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

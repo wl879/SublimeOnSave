@@ -1,11 +1,6 @@
 [
-	{
-		"caption": "-", "id": "side-bar-end-separator"
-	},
-    {
-    	"caption": "On Save", "command": "new_on_save_config", "args": {"dirs": []}
-    },
-    {
-		"caption": "-", "id": "side-bar-end-separator"
-	}
+	{"caption": "-", "id": "side-bar-end-separator"},
+    {"caption": "On Save Config", "command": "new_on_save_config", "args": {"paths": []}},
+    {"caption": "On Save Build", "command": "on_save_build", "args": {"paths": []}},
+    {"caption": "-", "id": "side-bar-end-separator"}
 ]
