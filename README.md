@@ -60,6 +60,11 @@ LISTENER:
 #  name right  = diaplay at right view
 #  name bottom = diaplay at bottom view
 
+# WATCH options
+# pattern are separated by commas，reserved words has "BUILD","NOBUILD"
+#  - BUILD     = watch (super + b) key binding 
+#  - NOBUILD   = just watch (on save) event
+
 ```
 
 

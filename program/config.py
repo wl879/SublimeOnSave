@@ -9,17 +9,17 @@ DATA_CACHE = {}
 class Config():
 
 	def __init__(self, file):
-
 		self.file = file
 		self.dir = path.dirname(file)
-		
 		f = codecs.open( file, 'r', 'utf-8' )
 		text = f.read().strip()
 		f.close()
-		self.data = json.loads( text ) if text[0] == '{' else yaml.parse( text )			
-		
+		self.data = json.loads( text ) if text[0] == '{' else yaml.parse( text )
 		self.listeners = []
-		for sub in self.data.get('LISTENER') or []:
+		temp = self.data.get('LISTENER')
+		if type(temp) != list:
+			raise Exception("file \""+file+"\" format error")
+		for sub in temp:
 			if sub.get("CMD"):
 				self.listeners.append( Listener(sub, self) )
 
@@ -27,13 +27,6 @@ class Config():
 		if name == "CONSOLE":
 			return self.data.get(name) or self.data.get("OUT")
 		return self.data.get(name)
-
-	def watch(self, file):
-		res = []
-		for l in self.listeners:
-			if l.watch(file):
-				res.append(l)
-		return res if len(res) > 0 else None
 
 	@staticmethod
 	def scan(target, filename, uplevel = 10):

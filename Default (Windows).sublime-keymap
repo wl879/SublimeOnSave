@@ -1,0 +1,3 @@
+[
+    { "keys": ["ctrl+b"], "command": "on_save_build", "args": {"paths": []}},
+]

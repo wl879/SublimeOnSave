@@ -61,14 +61,19 @@ class NewOnSaveConfigCommand(sublime_plugin.WindowCommand):
 class OnSaveBuildCommand(sublime_plugin.WindowCommand):
    
     def run(self, paths):
-        cmds = on_save.watch( paths[0] )
+        
+        file = ""
+        if len(paths):
+            file = paths[0]
+        else:
+            file = self.window.active_view().file_name()
+            
+        print(file)
+        cmds = on_save.watch( file, True )
         if cmds:
             on_save.run( cmds )
+        else:
+            self.window.run_command("build")
 
     def is_visible(self, paths):
-        if len(paths) == 1:
-            if on_save.watch( paths[0] ):
-                return True
-        return False
-
-# todo: 输出解析器是一个 正则配置，有： error, file, warn, log, tag, hide
+        return len(paths) == 1
