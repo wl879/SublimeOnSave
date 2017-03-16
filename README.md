@@ -29,7 +29,8 @@ VAR:
 	tsc: "/usr/local/bin/tsc"
 	# specify ECMAScript target version
     target: --target ES5
-
+ENV:
+	PATH: /usr/bin/
 # optional 
 CONSOLE : right
 
@@ -64,6 +65,12 @@ LISTENER:
 # pattern are separated by commas，reserved words has "BUILD","NOBUILD"
 #  - BUILD     = watch (super + b) key binding 
 #  - NOBUILD   = just watch (on save) event
+
+# ENV options
+#  - CWP     = changes the current working directory to the given path.
+#  - PATH
+#  - HOME
+#  ...
 
 ```
 

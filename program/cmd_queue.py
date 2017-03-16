@@ -53,6 +53,10 @@ class CmdProcess():
             return
         cmd = self.queue.pop(0)
         self.console.log('>>> # ' + cmd.cmd + '\n')
+        if cmd.env and cmd.env.get("CWD"):
+            os.chdir(cmd.env.get("CWD"))
+        else:
+            os.chdir(cmd.dir)
         self.process   = exec.AsyncProcess(None, cmd.cmd, cmd.env or {}, self)
         self.timestamp = self.process.start_time
         if cmd.timeout:

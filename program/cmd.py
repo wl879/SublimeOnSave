@@ -8,7 +8,10 @@ class Cmd():
 		self.file    = file
 		self.dir     = dir
 		self.console = console
-		self.env     = env
+		if type(env) == dict:
+			self.env = env
+		else:
+			self.env = None
 		self.timeout = timeout
 		self.parser  = parser
 		self.keybind = keybind

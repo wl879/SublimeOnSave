@@ -17,7 +17,9 @@ def parse( text ):
 			isarr  = m.group(2)
 			name   = m.group(3)
 			value  = m.group(4).strip()
-		
+			if value and (value[0] == "'" or value[0] == '"'):
+				value = value[1:-1]
+
 			if level == -1:
 				level_stack.append( indent )
 			elif indent > level_stack[level]:
