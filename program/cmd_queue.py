@@ -36,6 +36,7 @@ class CmdProcess():
         self.process = None
         self.timestamp = 0
         self.timeoutId = 0
+        self.encoding = "UTF-8"
 
     def add(self, cmd):
         self.queue.append(cmd)
@@ -77,8 +78,8 @@ class CmdProcess():
 
     # AsyncProcess 协议部分
     def on_data(self, process, data):
-        text = data.decode( 'UTF-8' )
-        self.console.echo( text )
+        # text = data.decode( 'UTF-8' )
+        self.console.echo( data )
 
     def on_finished(self, process):
         exit_code = process.exit_code()
